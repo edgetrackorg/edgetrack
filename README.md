@@ -13,7 +13,7 @@ CoreFusion ingests time-aligned outputs from multiple EdgeTrack nodes over **Gig
 > **Status:** Early prototype. APIs, hardware interfaces, and data schemas are subject to change.
 
 **More details on the architecture:**
-[Architecture Pipeline](./blob/main/docs/architecture_pipeline.md)
+[Architecture Pipeline](./docs/architecture_pipeline.md)
 
 ---
 
