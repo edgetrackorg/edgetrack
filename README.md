@@ -1,13 +1,19 @@
 # EdgeTrack
 
-EdgeTrack is designed as a deterministic capture backend for professional 3D authoring and interaction systems, while also being highly suitable for robotics, teleoperation, VR environments, and other precision spatial workflows.
+EdgeTrack is a deterministic capture backend designed for professional 3D authoring and interaction systems, and is equally well-suited for robotics, teleoperation, VR environments, and other precision spatial workflows.
 
-**EdgeTrack** is an on-edge capture and preprocessing stack for synchronized **RAW10 mono multi-camera** pipelines, targeting **Raspberry Pi 5 (primary)** or **Radxa Dragon Q6A (secondary)**.
-It provides **deterministic camera I/O**, **calibration-aware undistortion/normalization**, and **on-edge stereo reconstruction** to output **metric-scale 3D keypoints derived from calibrated stereo geometry**, with time-consistent sampling (error bounds depend on calibration and mechanics). Optionally, EdgeTrack can publish **ROI-reduced sparse 3D point clouds** to a host over **Gigabit LAN**.
+**EdgeTrack** is an on-edge capture and preprocessing stack for synchronized **RAW10 mono multi-camera** pipelines, targeting **Raspberry Pi 5 (primary)** and **Radxa Dragon Q6A (secondary)**. It provides **deterministic camera I/O**, **calibration-aware undistortion and normalization**, and **on-edge stereo reconstruction** to produce **metric-scale 3D keypoints derived from calibrated stereo geometry**, with time-consistent sampling (accuracy depends on calibration quality and mechanical stability).
 
-EdgeTrack is designed to pair with **[TDMStrobe](https://github.com/edgetrackorg/tdmstrobe)** and **[CoreFusion](https://github.com/edgetrackorg/corefusion)** to deliver stable synchronization, low-latency capture, and **deterministic NIR illumination**. TDMStrobe provides hardware-timed strobe control aligned to camera triggers and can coordinate illumination using an **A/B/C/D phase sequence** across multiple rigs to reduce cross-talk and keep exposure consistent. CoreFusion ingests the time-aligned outputs from multiple EdgeTrack nodes over **Gigabit Ethernet** and fuses them into a coherent representation (e.g., multi-view keypoints, tracks, or sparse geometry) with predictable timing and well-defined latency.
+Optionally, EdgeTrack can stream **ROI-reduced sparse 3D point clouds** to a host over **Gigabit Ethernet**, minimizing bandwidth while preserving relevant spatial information.
 
-> **Status:** early prototype. APIs, wiring, and schemas may change.
+EdgeTrack is designed to integrate with **[TDMStrobe](https://github.com/edgetrackorg/tdmstrobe)** and **[CoreFusion](https://github.com/edgetrackorg/corefusion)** to enable synchronized capture, low-latency processing, and **deterministic NIR illumination**.
+TDMStrobe provides hardware-timed strobe control aligned with camera triggers and supports **A/B/C/D phase sequencing** across multiple rigs to reduce cross-talk and maintain consistent exposure.
+CoreFusion ingests time-aligned outputs from multiple EdgeTrack nodes over **Gigabit Ethernet** and fuses them into a coherent multi-view representation (e.g., keypoints, tracks, or sparse geometry) with predictable timing and well-defined latency.
+
+> **Status:** Early prototype. APIs, hardware interfaces, and data schemas are subject to change.
+
+**More details on the architecture:**
+[Architecture Pipeline](./blob/main/docs/architecture_pipeline.md)
 
 ---
 
