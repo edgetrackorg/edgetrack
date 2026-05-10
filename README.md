@@ -1,0 +1,96 @@
+# EdgeTrack
+
+EdgeTrack is a deterministic capture backend designed for professional 3D authoring and interaction systems, and is equally well-suited for robotics, teleoperation, VR environments, and other precision spatial workflows.
+
+**EdgeTrack** is an on-edge capture and preprocessing stack for synchronized **RAW10 mono multi-camera** pipelines, targeting **Raspberry Pi 5 (primary)** and **Radxa Dragon Q6A (secondary)**. It provides **deterministic camera I/O**, **calibration-aware undistortion and normalization**, and **on-edge stereo reconstruction** to produce **metric-scale 3D keypoints derived from calibrated stereo geometry**, with time-consistent sampling (accuracy depends on calibration quality and mechanical stability).
+
+Optionally, EdgeTrack can stream **ROI-reduced sparse 3D point clouds** to a host over **Gigabit Ethernet**, minimizing bandwidth while preserving relevant spatial information.
+
+EdgeTrack is designed to integrate with **[TDMStrobe](https://github.com/edgetrackorg/tdmstrobe)** and **[CoreFusion](https://github.com/edgetrackorg/corefusion)** to enable synchronized capture, low-latency processing, and **deterministic NIR illumination**.
+TDMStrobe provides hardware-timed strobe control aligned with camera triggers and supports **A/B/C/D phase sequencing** across multiple rigs to reduce cross-talk and maintain consistent exposure.
+CoreFusion ingests time-aligned outputs from multiple EdgeTrack nodes over **Gigabit Ethernet** and fuses them into a coherent multi-view representation (e.g., keypoints, tracks, or sparse geometry) with predictable timing and well-defined latency.
+
+> **Status:** Early prototype. APIs, hardware interfaces, and data schemas are subject to change.
+
+---
+
+## Features
+
+* **Metric 3D on the edge:** On-device stereo reconstruction outputs **metric 3D keypoints** (and optional sparse ROI point clouds) instead of raw video streams or purely 2D detections.
+* **RAW-first capture:** **RAW10** preserves linear sensor data at the edge, avoiding ISP-induced artifacts that can reduce calibration accuracy and stereo stability.
+* **Low-latency pipeline:** Edge-side preprocessing and triangulation reduce host load and end-to-end latency.
+
+---
+
+## System Overview
+
+```
+[ TDMStrobe ] ─► [ EdgeTrack ] ─► [ CoreFusion ] ─► your Application
+```
+
+---
+
+## Bill of Materials (BOM)
+
+**Core**
+
+* **Raspberry Pi 5 (8 GB RAM)** — recommended; 4 GB is possible, 16 GB is optional
+* **Cooling**: Pi 5 **active cooler** (heatsink + fan)
+* **Storage**: microSD (≥ 64 GB) *or* NVMe (preferred for logs)
+
+**Cameras (Stereo per Pi)**
+
+* 2× **global‑shutter** modules (e.g., OV9281 1280×800 @ up to 120 fps)
+* **850 nm band‑pass filters** (camera‑safe IR)
+* **Rigid stereo mount** with baseline ~80–300 mm (context‑dependent)
+
+**Lighting / Sync**
+
+* **TDMStrobe** controller based on RP2040/Pico, providing A/B phases (C/D optional), Source: 👉 [TDMStrobe](https://github.com/edgetrackorg/tdmstrobe)
+
+---
+
+## Roadmap
+
+Coming soon. 
+
+---
+
+## License
+
+**Apache‑2.0** (code, firmware, docs). Hardware files (rig plates, brackets) may use **CERN‑OHL‑S**.
+
+---
+
+## Safety
+
+### NIR Illumination (850 nm vs 940 nm) & Eye Safety
+
+* **Never look into emitters.** Use black matte **baffles/shields**, aim emitters away from faces, and add **hardware interlocks** (LEDs off on loss of sync, open covers, or presence detection).
+* Keep **exposure short** (strobe pulses strictly within camera exposure) and **average irradiance low**.
+* Prefer **850 nm band-pass filters** on cameras to reduce the required LED output power.
+* **850 nm and 940 nm are both IR-A** and are **not inherently eye-safe**; safety depends on irradiance, geometry, duty cycle, distance, and exposure time (IEC 62471).
+
+### Solution Strategies
+
+**Option A — Prefer more viewpoints over more power (recommended for 940 nm)**
+- If **940 nm illumination** is preferred (reduced visible glow), the recommended approach is to **increase the number of stereo rigs (viewpoints)** to maintain SNR while keeping **irradiance low**, rather than compensating with higher-power NIR emitters.
+
+**Option B — Side / rear placement (recommended)**
+- Mount stereo pairs **left/right and slightly behind** the workspace, aimed toward the work area. Add **one or two top stereo pairs** for occlusion-free coverage. This directs NIR **away from the eyes** while maintaining uniform scene illumination.
+Future refinement: recess-mount one stereo pair near the table center and another near the back edge for a slimmer, more robust setup.
+
+**Option C — Front placement with HMD only**
+- If stereo pairs must face forward, operate with a **closed VR headset** (no see-through optics) so the user’s eyes are **occluded**. Baffles and interlocks are still required to protect bystanders.
+
+**Option D — IR-filtering safety eyewear**
+- Use **visible-light-transmitting eyewear** that strongly attenuates **near-IR (≈ 780–950 nm)** (specified optical density at **850 nm / 940 nm**) so users retain normal vision while IR exposure is reduced.
+
+**Option E — Side-shield eyewear (“horse-blinkers” concept)**
+- Provide **IR-blocking safety glasses with side shields** for operators and visitors when emitters face forward. Ensure proper **near-IR attenuation ratings** and a snug fit to block off-axis radiation. and ensure a snug fit to block off-axis light.
+
+---
+
+## Disclaimer
+
+Prototype hardware. Use at your own risk. Ensure eye‑safety and proper thermal design in all setups.
